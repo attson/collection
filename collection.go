@@ -801,6 +801,13 @@ func (c *Collection[T]) less(val1, val2 reflect.Value) bool {
 			return val1.Interface().(time.Time).Before(val2.Interface().(time.Time))
 		}
 		return false
+	case reflect.Ptr:
+		// check is time.Time{}
+		if val1.Type().String() == "*time.Time" {
+			tmp := val2.Interface().(*time.Time)
+			return val1.Interface().(*time.Time).Before(*tmp)
+		}
+		return false
 	default:
 		c.SetErr(errors.New("key has uncomparable type"))
 	}

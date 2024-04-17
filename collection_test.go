@@ -1067,6 +1067,37 @@ func TestSortByTime(t *testing.T) {
 	}
 }
 
+// TestSortBy tests the SortBy method of the Collection struct
+func TestSortByTimePtr(t *testing.T) {
+	// create a new Collection with some elements
+	type Person struct {
+		Id    int
+		Birth *time.Time
+	}
+	t1, _ := time.Parse("2006-01-02 15:04:05", "2019-01-01 00:00:00")
+	t2, _ := time.Parse("2006-01-02 15:04:05", "2019-01-01 00:00:01")
+	t3, _ := time.Parse("2006-01-02 15:04:05", "2019-01-01 00:00:02")
+
+	coll := NewCollection([]Person{
+		{3, &t3},
+		{1, &t1},
+		{2, &t2},
+	})
+
+	// sort the collection by the "id" field
+	sortedColl := coll.SortBy("Birth")
+
+	// check if the length of the sorted collection is correct
+	if len(sortedColl.value) != 3 {
+		t.Errorf("SortBy did not return the correct number of elements")
+	}
+
+	// check if the sorted collection contains the correct elements
+	if sortedColl.value[0].Id != 1 || sortedColl.value[1].Id != 2 || sortedColl.value[2].Id != 3 {
+		t.Errorf("SortBy did not return the correct elements")
+	}
+}
+
 // TestSortByDesc tests the SortByDesc method of the Collection struct
 func TestSortByDesc(t *testing.T) {
 	// create a new Collection with some elements
