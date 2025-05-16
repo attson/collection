@@ -816,6 +816,45 @@ func TestPluckStringPointer(t *testing.T) {
 	}
 }
 
+type PersonPointer struct {
+	Name *string
+	Age  *string
+}
+
+func (p PersonPointer) Key() *string {
+	v := *p.Name + *p.Age
+	return &v
+}
+
+func ptr[v any](vv v) *v {
+	return &vv
+}
+
+func TestPluckPointerString(t *testing.T) {
+	// create a new Collection with some elements
+	person1 := PersonPointer{ptr("Alice"), ptr("20")}
+	person2 := PersonPointer{ptr("Bob"), ptr("30")}
+	person3 := PersonPointer{ptr("Charlie"), ptr("40")}
+	coll := NewCollection([]PersonPointer{person1, person2, person3})
+
+	// pluck the "name" field from the collection
+	pluckedColl := coll.PluckString("Name")
+
+	if coll.Err() != nil {
+		t.Errorf("PluckString return err")
+	}
+
+	// check if the length of the plucked collection is correct
+	if len(pluckedColl.value) != 3 {
+		t.Errorf("PluckString did not return the correct number of elements")
+	}
+
+	// check if the plucked collection contains the correct elements
+	if pluckedColl.value[0] != "Alice" || pluckedColl.value[1] != "Bob" || pluckedColl.value[2] != "Charlie" {
+		t.Errorf("PluckString did not return the correct elements")
+	}
+}
+
 func TestPluckStringInterface(t *testing.T) {
 	// create a new Collection with some elements
 	person1 := Person{"Alice", "20"}

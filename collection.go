@@ -650,6 +650,11 @@ func (c *Collection[T]) PluckString(key string) *Collection[string] {
 		val := c.getter(v, key)
 
 		kind := val.Type().Kind()
+		if kind == reflect.Ptr {
+			kind = val.Elem().Type().Kind()
+			val = val.Elem()
+		}
+
 		if kind != reflect.String {
 			c.SetErr(errors.New("invalid type"))
 			return nil
@@ -665,6 +670,10 @@ func (c *Collection[T]) PluckInt64(key string) *Collection[int64] {
 	res := make([]int64, 0, len(c.value))
 	for _, v := range c.value {
 		val := c.getter(v, key)
+
+		if val.Type().Kind() == reflect.Ptr {
+			val = val.Elem()
+		}
 
 		if !val.CanInt() {
 			c.SetErr(errors.New("invalid type"))
@@ -682,6 +691,10 @@ func (c *Collection[T]) PluckFloat64(key string) *Collection[float64] {
 	for _, v := range c.value {
 		val := c.getter(v, key)
 
+		if val.Type().Kind() == reflect.Ptr {
+			val = val.Elem()
+		}
+
 		if !val.CanFloat() {
 			c.SetErr(errors.New("invalid type"))
 			return nil
@@ -698,6 +711,10 @@ func (c *Collection[T]) PluckUint64(key string) *Collection[uint64] {
 	for _, v := range c.value {
 		val := c.getter(v, key)
 
+		if val.Type().Kind() == reflect.Ptr {
+			val = val.Elem()
+		}
+
 		if !val.CanUint() {
 			c.SetErr(errors.New("invalid type"))
 			return nil
@@ -713,6 +730,10 @@ func (c *Collection[T]) PluckBool(key string) *Collection[bool] {
 	res := make([]bool, 0, len(c.value))
 	for _, v := range c.value {
 		val := c.getter(v, key)
+
+		if val.Type().Kind() == reflect.Ptr {
+			val = val.Elem()
+		}
 
 		if val.Kind() != reflect.Bool {
 			c.SetErr(errors.New("invalid type"))
