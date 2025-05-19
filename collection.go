@@ -853,6 +853,10 @@ func (c *Collection[T]) KeyByStrField(key string) (map[string]T, error) {
 	for _, v := range c.value {
 		val := c.getter(v, key)
 		if val.IsValid() && val.CanInterface() {
+			if val.Kind() == reflect.Ptr {
+				val = val.Elem()
+			}
+
 			if str, ok := val.Interface().(string); ok {
 				res[str] = v
 			} else {

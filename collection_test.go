@@ -1200,6 +1200,36 @@ func TestKeyByStrField(t *testing.T) {
 	}
 }
 
+func TestKeyByStrPointerField(t *testing.T) {
+	coll := NewCollection([]PersonPointer{
+		{ptr("Alice"), ptr("20")},
+		{ptr("Bob"), ptr("30")},
+		{ptr("Charlie"), ptr("40")},
+	})
+
+	// key the collection by the "name" field
+	keyedColl, err := coll.KeyByStrField("Name")
+
+	// check if the error is nil
+	if err != nil {
+		t.Errorf("KeyByStrField returned an error")
+	}
+
+	// check if the length of the keyed collection is correct
+	if len(keyedColl) != 3 {
+		t.Errorf("KeyByStrField did not return the correct number of elements")
+	}
+
+	// check if the keyed collection contains the correct elements
+	if _, ok := keyedColl["Alice"]; !ok {
+		t.Errorf("KeyByStrField did not return the correct elements")
+	}
+
+	if _, ok := keyedColl["Bob"]; !ok {
+		t.Errorf("KeyByStrField did not return the correct elements")
+	}
+}
+
 // TestKeyByStrField tests the KeyByStrField method of the Collection struct
 func TestKeyByIntField(t *testing.T) {
 	// create a new Collection with some elements
