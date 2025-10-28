@@ -1230,7 +1230,7 @@ func TestKeyByStrPointerField(t *testing.T) {
 	}
 }
 
-// TestKeyByStrField tests the KeyByStrField method of the Collection struct
+// TestKeyByIntField tests the TestKeyByIntField method of the Collection struct
 func TestKeyByIntField(t *testing.T) {
 	// create a new Collection with some elements
 	type Person struct {
@@ -1260,6 +1260,51 @@ func TestKeyByIntField(t *testing.T) {
 			// check if the keyed collection contains the correct elements
 			if _, ok := keyedColl[checkInt]; !ok {
 				t.Errorf("KeyBy did not return the correct elements")
+			}
+		}
+	}
+}
+
+// TestKeyByFunc tests the TestKeyByFunc method of the Collection struct
+func TestKeyByFunc(t *testing.T) {
+	// create a new Collection with some elements
+	type Person struct {
+		Int   int
+		Int64 int64
+		Int8  int8
+	}
+	coll := NewCollection([]Person{
+		{9, 10, 11},
+		{10, 11, 12},
+		{11, 12, 13},
+	})
+
+	fields := []string{"Int", "Int64", "Int8"}
+	checkInts := [][]interface{}{{9, 10, 11}, {int64(10), int64(11), int64(12)}, {int8(11), int8(12), int8(13)}}
+
+	for i, field := range fields {
+		// key the collection by the "int" field
+		keyedColl := coll.KeyByFunc(func(person Person) interface{} {
+			switch field {
+			case "Int":
+				return person.Int
+			case "Int64":
+				return person.Int64
+			case "Int8":
+				return person.Int8
+			}
+			return nil
+		})
+
+		// check if the length of the keyed collection is correct
+		if len(keyedColl) != 3 {
+			t.Errorf("KeyByFunc did not return the correct number of elements")
+		}
+
+		for _, checkInt := range checkInts[i] {
+			// check if the keyed collection contains the correct elements
+			if _, ok := keyedColl[checkInt]; !ok {
+				t.Errorf("KeyByFunc did not return the correct elements")
 			}
 		}
 	}

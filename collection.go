@@ -879,6 +879,15 @@ func (c *Collection[T]) KeyBy(key string) map[interface{}]T {
 	return res
 }
 
+// KeyByFunc 根据callback，返回一个map
+func (c *Collection[T]) KeyByFunc(callback func(T) interface{}) map[interface{}]T {
+	res := make(map[interface{}]T)
+	for _, v := range c.value {
+		res[callback(v)] = v
+	}
+	return res
+}
+
 // Max 数组中最大的元素，仅对基础Collection生效, 可以传递一个比较函数
 func (c *Collection[T]) Max() T {
 	var zero T
